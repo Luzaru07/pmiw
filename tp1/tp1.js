@@ -1,0 +1,46 @@
+//Luz Rodríguez Calderón
+//Comisión 3 David Bedoian
+//video de youtube:
+//profe por alguna razón no carga el dibujo y no pude arreglarlo, asimismo me disculpo por no incluir el video
+let c1; //azul
+let c2; //negro
+//cantidad de cuadrados y circulos
+let cantA = 3; //mepa que es const
+let cantB = 3;
+let img;
+
+function preload () {
+  img = loadImage ("assets/a.jpeg");
+}
+
+
+function setup() {
+  createCanvas (800,400);
+  c1 = color(37, 40, 183); //azul
+  c2 = color(0); //negro
+}
+
+
+function draw() {
+  background (255);
+  // función de retorno verdadero o falso
+function posicionMouse () {
+  return mouseX > width/2;
+}
+
+  if (posicionMouse()) {
+    c1 === color(0);
+    c2 === color(37, 40, 183);
+  } else {
+    c1 === color(37, 40, 183);
+    c2 === color(0);
+}
+  for (let a=0; a<cantA; a++ ) {
+    for (let b=0; b<cantB; b++ ) {
+      let ancho = 400/cantA;
+      let alto = 400/cantB;
+       image (img, 0, 0, 400, 400);
+      //modulo( a*ancho, b*alto, ancho, alto, a, b);
+    }
+  }
+}
