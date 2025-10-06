@@ -1,11 +1,16 @@
-let pantalla = 0; // 0 = inicio, 1 = juego, 2 = créditos, 3 = fin
-let img1, img2, img3,img4;
+let DEBUG = true; //cambiar a false al finalizar
+let pantalla = 0; // 0 = inicio, 7 = créditos
+//let img0, img1, img2, img3, img4; q quede de recuerdo...
+let img = [];
 
 function preload () {
-  img1 = loadImage ("data/imagen1.jpg");
-  img2 = loadImage ("data/imagen2.jpg");
-  img3 = loadImage ("data/imagen3.jpg");
-  img4 = loadImage ("data/imagen4.jpg");
+  /*
+  img0[0] = loadImage ("data/imagen0.jpg");
+  //loadSound(), loadFont()...
+  */
+  for ( let i=0; i<5; i++ ) {
+  img[i] = loadImage ("./data/imagen"+i+".jpg"); //+i+ = +nf(i,2)+
+  }
 }
 
 
@@ -16,56 +21,55 @@ function setup() {
 }
 
 
-
 function draw() {
   background(220);
   
   if (pantalla === 0) {
     // Pantalla de inicio
     background(50, 100, 200);
-    fill(255);
-    text("Pantalla 0: Inicio", width/2, height/2);
-    textSize(25);
-    text("Haz clic para ir a la siguiente", width/2, height/2 + 40);
+    pantallaInicio();
     
   } else if (pantalla === 1) {
     // Pantalla del juego
-    background(200, 50, 50);
-    image (img1, 0, 0, width, height);
-    fill(255);
-    textSize(28);
-    text("Pantalla 1: Encuentro con Alecto", width/2, height/2);
+    background(0);
+    pantalla1();
     
   } else if (pantalla === 2) {
-    // Pantalla de créditos
-    background(50, 200, 100);
-    image (img2, 0, 0, width, height);
-    fill(0);
-    text("Pantalla 2: Desafio, Aceptar o Rechazar", width/2, height/2);
+    // Pantalla 
+    background(0);
+    pantalla2();
     
   } else if (pantalla === 3) {
     // Pantalla de fin
     background(0);
-    image (img3, 0, 0, width, height);
-    fill(255);
-    text("Pantalla 3: Rechaza y pelea", width/2, height/2);
-    textSize(25);
-    text("Haz clic para volver al inicio", width/2, height/2 + 40);
+    pantalla3();
+    
   } else if (pantalla === 4) {
     // Pantalla de fin
-    background(0);
-    image (img4, 0, 0, width, height);
-    fill(255);
-    text("Pantalla 4: Fin", width/2, height/2);
-    textSize(25);
-    text("Haz clic para volver al inicio", width/2, height/2 + 40);
+    background(255);
+    pantalla4();
+    
+  } else if (pantalla === 5) {
+    // Pantalla de fin
+    background(148, 224, 18); //verde
+    pantalla5();
+    
+  } else if (pantalla === 6) {
+    // Pantalla de fin
+    background(250, 91, 141); //rosa
+    pantalla6();
+    
+  } else if (pantalla === 7) { //CRÉDITOS
+    // Pantalla de fin
+    background(255, 192, 54); //naranja
+    pantallaCréditos(); 
   }
-}
-
-function mousePressed() {
-  // Avanzar pantalla al hacer clic
-  pantalla++;
-  if (pantalla > 3) {
-    pantalla = 0; // vuelve al inicio
+  if ( DEBUG ) {
+  push();
+  fill (0);
+  textAlign(LEFT); //Derecha
+  textSize(20);
+  text( "Pantalla:" + pantalla, 20, 20);
+  pop();
   }
 }
