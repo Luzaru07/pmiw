@@ -1,4 +1,11 @@
-let DEBUG = true; //cambiar a false al finalizar
+/*
+Luz Rodríguez Calderón
+Comisión 3 
+Url: 
+Pido disculpas a mi compañero y al profesor por el retraso en mi entrega
+*/
+
+let DEBUG = false; //cambiar a false al finalizar
 let pantalla = 0; // 0 = inicio, 8 = créditos
 let img = [];
 let sonidoAmbiente;
@@ -6,8 +13,8 @@ let sonidoClick;
 
 function preload () {
   //loadSound(), loadFont()...
-  for ( let i=0; i<10; i++ ) {
-    img[i] = loadImage ("./data/imagen"+i+".jpg"); //+i+ = +nf(i,2)+ si es más de 2 cifras
+  for ( let i=0; i<11; i++ ) {
+    img[i] = loadImage ("./data/imagen"+nf(i,2)+".jpg"); //+i+ = +nf(i,2)+ si es más de 2 cifras
   }
   sonidoAmbiente = loadSound("./data/sonidoAmbiente.mp3");
   sonidoClick = loadSound("./data/sonidoClick.mp3");
@@ -25,8 +32,6 @@ function draw() {
   background(220);
 
   if (pantalla === 0) {
-    // Pantalla de inicio
-    background(50, 100, 200);
     pantallaInicio();
   } else if (pantalla === 1) {
     pantalla1();
@@ -42,13 +47,15 @@ function draw() {
     pantalla6();
   } else if (pantalla === 7) {
     pantalla7();
-  } else if (pantalla === 8) {
+    } else if (pantalla === 8) {
+    pantalla8();
+    } else if (pantalla === 9) {
+    pantalla9();
+  } else if (pantalla === 10) {
     pantallaCreditos();
   }
   
-  //Botón para activar y/o pausar la música
-  fill (207, 8, 252);
-  ellipse (60, 40, 80, 50);
+  dibujarBotones();
   
   /*
   if ( sonidoAmbiente.isPlaying() ) {
@@ -67,6 +74,4 @@ function draw() {
     text( "Pantalla:" + pantalla, 20, 20);
     pop();
   }
-  
-  dibujarBotones();
 }
