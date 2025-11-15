@@ -285,8 +285,8 @@ class Juego {
 
       if (keyCode === 32) { // disparo con barra espaciadora
         this.balas.push(new Bala(this.nave.x, this.nave.y));
+        if (sonidoDisparo) sonidoDisparo.play();
 
-        if (sonidoDisparo)) sonidoDisparo.play();
       }
     } else if (["ganar", "perder"].includes(this.estado) && keyCode === ENTER) {
       this.reiniciar();
