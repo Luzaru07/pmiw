@@ -1,22 +1,76 @@
-// MISIÓN ESTELAR - Versión final con MENÚ ANIMADO (hover) y animación de victoria
-// Créditos: Valentín San Román y Luz Rodríguez Calderón
-// 100% p5.js - sin sonido
+// =========================================
+//  MISIÓN ESTELAR - Con imágenes y sonido
+//  Créditos originales: Valentín San Román y Luz Calderón
+//  Url:
+// =========================================
 
+// ---- Recursos (imagenes y sonidos) ----
+let musicaFondo = null;
+let sonidoDisparo = null;
+let sonidoExplosion = null;
+
+let imgFondo = null;
+let imgNave = null;
+let imgAsteroide = null;
+let imgHeart = null;
+
+function preload() {
+  // Cargar sonidos si p5.sound está disponible
+  try {
+   musicaFondo = loadSound("./libraries/data/musica.mp3", ()=>{}, ()=>{ musicaFondo = null; });
+   } catch(e) { musicaFondo = null; }
+   
+  try {
+   sonidoDisparo = loadSound("./libraries/data/disparo.wav", ()=>{}, ()=>{ sonidoDisparo = null; });
+   } catch(e) { sonidoDisparo = null; }
+   
+  try {
+   sonidoExplosion = loadSound("./libraries/data/explosion.wav", ()=>{}, ()=>{ sonidoExplosion = null; });
+   } catch(e) { sonidoExplosion = null; }
+
+  // Cargar imágenes
+  try {
+   imgFondo = loadImage("./data/fondo.jpg", ()=> {}, ()=> { imgFondo = null; }); 
+   } catch(e) { imgFondo = null; }
+  try {
+    imgNave = loadImage("./data/nave.png", ()=> {}, ()=> { imgNave = null; });
+  } catch(e) { imgNave = null; }
+  try {
+    imgAsteroide = loadImage("./data/asteroide.png", ()=> {}, ()=> { imgAsteroide = null;});
+  } catch(e) { imgAsteroide = null; }
+  try {
+    imgHeart = loadImage("./data/heart.jpg", ()=> {}, ()=> { imgHeart = null; });
+  } catch(e) { imgHeart = null; }
+}
+
+// -----------------------------------------
 let juego;
 let estrellas = [];
 
 function setup() {
   createCanvas(800, 500);
   textFont('monospace');
+
+  // Iniciar música
+  if (musicaFondo && !musicaFondo.isPlaying()) {
+    musicaFondo.setVolume(0.4);
+    musicaFondo.loop();
+  }
+
   juego = new Juego();
+
   for (let i = 0; i < 160; i++) estrellas.push(new Estrella());
-  noCursor(); // opcional: muestra un cursor personalizado
+
+  noCursor();
 }
 
 function draw() {
-  background(5, 5, 20);
+  background(5, 5, 20); //si no hay background se buguea XD
+  // Fondo
+  if (imgFondo) image(imgFondo, 0, 0, width, height);
+  else background(5, 5, 20);
 
-  // Fondo estrellado (dibujado primero)
+  // Estrellas
   for (let s of estrellas) {
     s.mover();
     s.mostrar();
@@ -25,7 +79,7 @@ function draw() {
   juego.mostrar();
   juego.actualizar();
 
-  // cursor pequeño
+  // Cursor
   push();
   noStroke();
   fill(200);
@@ -34,15 +88,15 @@ function draw() {
 }
 
 function keyPressed() {
-  juego.teclaPresionada(keyCode);
+  if (juego) juego.teclaPresionada(keyCode);
 }
 
 function keyReleased() {
-  juego.teclaSoltada(keyCode);
+  if (juego) juego.teclaSoltada(keyCode);
 }
 
 function mousePressed() {
-  juego.click(mouseX, mouseY);
+  if (juego) juego.click(mouseX, mouseY);
 }
 
 //////////////////////////
@@ -58,8 +112,8 @@ class Juego {
     this.vidas = 3;
     this.escudo = 100;
     this.dificultad = "normal";
-    this.particulas = []; // partículas para efectos
-    this.confetti = []; // confetti victoria
+    this.particulas = [];
+    this.confetti = [];
 
     // botones
     this.botonJugar = new Boton(width / 2 - 90, 220, 180, 46, "Jugar");
@@ -72,19 +126,23 @@ class Juego {
       new Boton(width / 2 + 80, 230, 120, 44, "Difícil")
     ];
     this.botonReiniciar = new Boton(width / 2 - 70, height / 2 + 40, 140, 40, "Reiniciar");
+    this.ultimaOleada = 0;
   }
 
   actualizar() {
     if (this.estado === "jugando") {
+
       this.nave.mover();
 
-      // ajustar frecuencia y recarga segun dificultad
-      let freq = this.dificultad === "fácil" ? 80 : this.dificultad === "normal" ? 60 : 40;
-      let escudoRec = this.dificultad === "fácil" ? 0.25 : this.dificultad === "normal" ? 0.12 : 0.06;
+      // dificultad
+      let freq = this.dificultad === "fácil" ? 80 :
+        this.dificultad === "normal" ? 60 : 40;
+
+      let escudoRec = this.dificultad === "fácil" ? 0.25 :
+        this.dificultad === "normal" ? 0.12 : 0.06;
 
       if (frameCount % freq === 0) this.asteroides.push(new Asteroide());
 
-      // recarga de escudo (guardada en 0-100)
       this.escudo = min(this.escudo + escudoRec, 100);
 
       // actualizar balas
@@ -94,70 +152,76 @@ class Juego {
         if (b.fueraDePantalla()) this.balas.splice(i, 1);
       }
 
-      // asteroides: movimiento y colisiones
+      // asteroides y colisiones
       for (let i = this.asteroides.length - 1; i >= 0; i--) {
         let a = this.asteroides[i];
         a.mover();
 
         // colisión bala-asteroide
         let destroyed = false;
+
         for (let j = this.balas.length - 1; j >= 0; j--) {
           let b = this.balas[j];
+
           if (dist(b.x, b.y, a.x, a.y) < a.tam / 2) {
-            // explosión de partículas
             for (let k = 0; k < 10; k++) this.particulas.push(new Particula(a.x, a.y));
+
+            if (sonidoExplosion) sonidoExplosion.play();
+
             this.balas.splice(j, 1);
             this.asteroides.splice(i, 1);
             this.puntaje++;
+
             destroyed = true;
             break;
           }
         }
+
         if (destroyed) continue;
 
         // colisión nave-asteroide
         if (this.nave.colision(a)) {
-          // aplicar daño reducido por escudo
           const baseDamage = 1.0;
+
           if (this.escudo > 0) {
-            // escudo reduce daño a la mitad y se consume
             let damage = baseDamage * 0.5;
             this.nave.vida -= damage;
-            this.escudo -= 40; // consumo por impacto
+            this.escudo -= 40;
             if (this.escudo < 0) this.escudo = 0;
           } else {
             this.nave.vida -= baseDamage;
           }
 
-          // partículas de choque en la nave
           for (let k = 0; k < 12; k++) this.particulas.push(new Particula(this.nave.x, this.nave.y));
+
           this.asteroides.splice(i, 1);
 
           if (this.nave.vida <= 0) {
             this.estado = "perder";
+            if (musicaFondo) musicaFondo.stop();
           }
+
           continue;
         }
 
-        // si sale de pantalla lo sacamos
         if (a.y > height + a.tam) this.asteroides.splice(i, 1);
       }
 
-      // actualizar partículas
+      // partículas
       for (let i = this.particulas.length - 1; i >= 0; i--) {
         this.particulas[i].mover();
         if (this.particulas[i].vida <= 0) this.particulas.splice(i, 1);
       }
 
-      // check win
+      // victoria
       if (this.puntaje >= 25) {
         this.estado = "ganar";
-        // iniciar confetti
         for (let i = 0; i < 80; i++) this.confetti.push(new Confetti(random(width), random(-200, -20)));
+        if (musicaFondo) musicaFondo.stop();
       }
     }
 
-    // animar confetti si hay
+    // confetti
     if (this.estado === "ganar") {
       for (let i = this.confetti.length - 1; i >= 0; i--) {
         this.confetti[i].mover();
@@ -167,7 +231,6 @@ class Juego {
   }
 
   mostrar() {
-    // HUD y estados
     if (this.estado === "menu") this.menuPrincipal();
     else if (this.estado === "instrucciones") this.pantallaInstrucciones();
     else if (this.estado === "creditos") this.pantallaCreditos();
@@ -176,16 +239,12 @@ class Juego {
     else if (this.estado === "ganar") this.pantallaGanar();
     else if (this.estado === "perder") this.pantallaPerder();
 
-    // dibujar asteroides y partículas encima/hud
-    if (this.estado === "jugando" || this.estado === "ganar" || this.estado === "perder") {
+    if (["jugando", "ganar", "perder"].includes(this.estado)) {
       for (let a of this.asteroides) a.mostrar();
       for (let p of this.particulas) p.mostrar();
     }
 
-    // confetti sobre todo
-    if (this.confetti.length > 0) {
-      for (let c of this.confetti) c.mostrar();
-    }
+    for (let c of this.confetti) c.mostrar();
   }
 
   click(x, y) {
@@ -202,30 +261,34 @@ class Juego {
         }
       }
       if (this.botonVolver.click(x, y)) this.estado = "menu";
-    } else if (this.estado === "instrucciones" || this.estado === "creditos") {
+    } else if (["instrucciones", "creditos"].includes(this.estado)) {
       if (this.botonVolver.click(x, y)) this.estado = "menu";
     } else if (this.estado === "jugando") {
-      // boton reiniciar pequeño
       if (this.botonReiniciar.click(x, y)) this.reiniciar();
-    } else if (this.estado === "ganar" || this.estado === "perder") {
+    } else if (["ganar", "perder"].includes(this.estado)) {
       if (this.botonVolver.click(x, y)) {
         this.estado = "menu";
         this.confetti = [];
+        if (musicaFondo && !musicaFondo.isPlaying()) {
+          musicaFondo.setVolume(0.4);
+          musicaFondo.loop();
+        }
       }
     }
   }
-
   teclaPresionada(keyCode) {
     if (this.estado === "menu") {
       if (keyCode === ENTER) this.estado = "dificultad";
     } else if (this.estado === "jugando") {
       if (keyCode === LEFT_ARROW) this.nave.moverIzquierda = true;
       if (keyCode === RIGHT_ARROW) this.nave.moverDerecha = true;
-      if (keyCode === 32) this.balas.push(new Bala(this.nave.x, this.nave.y));
-      if (keyCode === 80) { // P para pausar/play rápido (opcional)
-        this.estado = "menu";
+
+      if (keyCode === 32) { // disparo con barra espaciadora
+        this.balas.push(new Bala(this.nave.x, this.nave.y));
+
+        if (sonidoDisparo)) sonidoDisparo.play();
       }
-    } else if ((this.estado === "ganar" || this.estado === "perder") && keyCode === ENTER) {
+    } else if (["ganar", "perder"].includes(this.estado) && keyCode === ENTER) {
       this.reiniciar();
       this.estado = "jugando";
     }
@@ -241,15 +304,18 @@ class Juego {
     this.asteroides = [];
     this.balas = [];
     this.puntaje = 0;
-    this.vidas = 3;
     this.escudo = 100;
     this.particulas = [];
     this.confetti = [];
+
+    if (musicaFondo && !musicaFondo.isPlaying()) {
+      musicaFondo.setVolume(0.4);
+      musicaFondo.loop();
+    }
   }
 
-  // ---------- PANTALLAS ----------
+  // ----- Pantallas -----
   menuPrincipal() {
-    // Título con leve pulso
     push();
     translate(width / 2, 120 + sin(frameCount * 0.02) * 6);
     textAlign(CENTER);
@@ -258,16 +324,14 @@ class Juego {
     text("🚀 MISIÓN ESTELAR 🚀", 0, 0);
     pop();
 
-    // Botones (con hover)
     this.botonJugar.mostrarHover();
     this.botonInstrucciones.mostrarHover();
     this.botonCreditos.mostrarHover();
 
-    // Pie
     fill(200);
     textSize(13);
     textAlign(CENTER);
-    text("Creado por Valentín San Román y Luz Rodríguez Calderón", width / 2, height - 28);
+    text("Creado por Valentín San Román y Luz Calderón", width / 2, height - 28);
   }
 
   menuDificultad() {
@@ -276,10 +340,8 @@ class Juego {
     textSize(26);
     text("Selecciona dificultad", width / 2, 180);
 
-    // botones dificultad con hover
     for (let b of this.botonesDif) b.mostrarHover();
 
-    // volver
     this.botonVolver.mostrarHover();
   }
 
@@ -288,8 +350,11 @@ class Juego {
     textAlign(CENTER);
     textSize(28);
     text("INSTRUCCIONES", width / 2, 110);
+
     textSize(16);
-    text("← → : mover   •   ESPACIO : disparar\nTu escudo reduce el daño a la mitad cuando tiene energía.\nEvitá asteroides y alcanzá 25 puntos para ganar.", width / 2, 220);
+    text("← → : mover  •  ESPACIO : disparar\nTu escudo reduce el daño a la mitad.\nEvitá asteroides y alcanzá 25 puntos para ganar.",
+      width / 2, 220);
+
     this.botonVolver.mostrarHover();
   }
 
@@ -298,55 +363,57 @@ class Juego {
     textAlign(CENTER);
     textSize(28);
     text("CRÉDITOS", width / 2, 110);
+
     textSize(16);
-    text("Diseño y programación:\nValentín San Román\nApoyo creativo:\nLuz Canelo", width / 2, 220);
+    text("Diseño y programación:\nValentín San Román\nApoyo creativo:\nLuz Calderón",
+      width / 2, 220);
+
     this.botonVolver.mostrarHover();
   }
 
   pantallaJuego() {
-    // Nave
     this.nave.mostrar();
 
-    // UI: puntaje
+    // puntaje
     fill(255);
     textSize(16);
     textAlign(LEFT);
     text("Puntaje: " + this.puntaje, 20, 28);
 
-    // vidas (corazones)
+    // vidas
     let vidasEnteras = floor(max(this.nave.vida, 0));
     for (let i = 0; i < 3; i++) {
       if (i < vidasEnteras) fill(255, 0, 0);
       else if (i === vidasEnteras && this.nave.vida - vidasEnteras >= 0.5) fill(255, 140, 0);
       else fill(100);
-      heart(20 + i * 30, 55, 10);
+
+      image (imgHeart, 20 + i * 30, 55, 20, 20);
     }
-    // valor vida numérico
+
     fill(255);
     textSize(12);
     text("Vida: " + nf(this.nave.vida, 1, 1), 20, 80);
 
-    // barra escudo
+    // escudo
     fill(255);
     textSize(12);
     text("Escudo", 20, 105);
+
     noStroke();
     fill(40);
     rect(20, 110, 150, 12, 6);
+
     fill(0, 180, 255);
     rect(20, 110, map(this.escudo, 0, 100, 0, 150), 12, 6);
 
-    // boton reiniciar
+    // reiniciar botón
     this.botonReiniciar.mostrarHover();
 
-    // mostrar balas activas
+    // balas
     for (let b of this.balas) b.mostrar();
-
-    // mostrar asteroides ya lo hace main
   }
 
   pantallaGanar() {
-    // animación confetti se ejecuta en actualizar y mostrar confetti
     fill(0, 255, 100);
     textAlign(CENTER);
     textSize(36);
@@ -354,7 +421,7 @@ class Juego {
 
     textSize(18);
     fill(255);
-    text("Excelente trabajo, Valentín.", width / 2, height / 2);
+    text("Excelente trabajo, Astronauta.", width / 2, height / 2);
 
     this.botonVolver.mostrarHover();
   }
@@ -364,17 +431,18 @@ class Juego {
     textAlign(CENTER);
     textSize(36);
     text("¡MISIÓN FALLIDA 💥!", width / 2, height / 2 - 40);
+
     textSize(18);
     fill(255);
-    text("Intentá de nuevo. Presioná Volver para regresar al menú.", width / 2, height / 2);
+    text("Intentá nuevamente. Presioná Volver.", width / 2, height / 2);
+
     this.botonVolver.mostrarHover();
   }
 }
 
 //////////////////////////
-// CLASES AUXILIARES
+// CLASE NAVE
 //////////////////////////
-
 class Nave {
   constructor() {
     this.x = width / 2;
@@ -383,7 +451,7 @@ class Nave {
     this.moverIzquierda = false;
     this.moverDerecha = false;
     this.disparos = [];
-    this.vida = 3.0; // puede tener medias
+    this.vida = 3.0;
     this.anim = 0;
     this.cooldown = 0;
   }
@@ -391,10 +459,13 @@ class Nave {
   mover() {
     if (this.moverIzquierda) this.x -= this.vel;
     if (this.moverDerecha) this.x += this.vel;
+
     this.x = constrain(this.x, 20, width - 20);
+
     this.anim += 0.14;
     if (this.cooldown > 0) this.cooldown--;
-    // actualizar disparos propios
+
+    // actualizar disparos internos
     for (let i = this.disparos.length - 1; i >= 0; i--) {
       this.disparos[i].mover();
       if (this.disparos[i].fueraDePantalla()) this.disparos.splice(i, 1);
@@ -404,29 +475,34 @@ class Nave {
   mostrar() {
     push();
     translate(this.x, this.y);
-    noStroke();
-    // cuerpo
-    fill(100, 200, 255);
-    ellipse(0, 0, 46, 70);
-    // fuego
-    fill(255, 160, 0);
-    triangle(-14, 30, 14, 30, 0, 54 + sin(this.anim) * 6);
-    // cabina
-    fill(255);
-    ellipse(0, -12, 24, 24);
 
-    // brillo de escudo (si hay)
-    let globalEsc = juego.escudo;
-    if (globalEsc > 8) {
-      noFill();
-      stroke(0, 200, 255, map(globalEsc, 0, 100, 20, 160));
-      strokeWeight(2);
-      ellipse(0, 0, 72 + sin(this.anim) * 4, 96 + sin(this.anim) * 4);
+    if (imgNave) {
+      pop();
+      imageMode(CENTER);
+      image(imgNave, this.x, this.y, 60, 80);
+    } else {
       noStroke();
-    }
-    pop();
+      fill(100, 200, 255);
+      ellipse(0, 0, 46, 70);
 
-    // mostrar disparos de la nave
+      fill(255, 160, 0);
+      triangle(-14, 30, 14, 30, 0, 54 + sin(this.anim) * 6);
+
+      fill(255);
+      ellipse(0, -12, 24, 24);
+
+      let globalEsc = juego.escudo;
+      if (globalEsc > 8) {
+        noFill();
+        stroke(0, 200, 255, map(globalEsc, 0, 100, 20, 160));
+        strokeWeight(2);
+        ellipse(0, 0, 72 + sin(this.anim) * 4, 96 + sin(this.anim) * 4);
+      }
+
+      pop();
+    }
+
+    // mostrar disparos
     for (let d of this.disparos) d.mostrar();
   }
 
@@ -434,13 +510,8 @@ class Nave {
     if (this.cooldown <= 0) {
       this.disparos.push(new Disparo(this.x, this.y - 36));
       this.cooldown = 8;
-    }
-  }
 
-  actualizarDisparos() {
-    for (let i = this.disparos.length - 1; i >= 0; i--) {
-      this.disparos[i].mover();
-      if (this.disparos[i].fueraDePantalla()) this.disparos.splice(i, 1);
+      if (sonidoDisparo) sonidoDisparo.play();
     }
   }
 
@@ -450,6 +521,9 @@ class Nave {
   }
 }
 
+//////////////////////////
+// BALAS Y DISPAROS
+//////////////////////////
 class Bala {
   constructor(x, y) {
     this.x = x;
@@ -464,9 +538,10 @@ class Bala {
   mostrar() {
     noStroke();
     fill(255, 240, 120);
-    ellipse(this.x, this.y, 8);
+    ellipse(this.x, this.y, 18); //
+
     fill(255, 150, 0, 120);
-    ellipse(this.x, this.y + 6, 14, 10);
+    ellipse(this.x, this.y + 6, 14, 10); //
   }
 
   fueraDePantalla() {
@@ -484,17 +559,23 @@ class Disparo {
   }
 
   mover() {
-    this.trazo.push({ x: this.x, y: this.y });
+    this.trazo.push( {
+    x:
+    this.x, y:
+      this.y
+    }
+    );
     if (this.trazo.length > 12) this.trazo.shift();
+
     this.y -= this.vel;
     this.alpha -= 6;
   }
 
   mostrar() {
-    // cola luminosa
     noFill();
     stroke(0, 210, 255, this.alpha * 0.9);
     strokeWeight(3);
+
     beginShape();
     for (let p of this.trazo) vertex(p.x, p.y);
     endShape();
@@ -508,6 +589,9 @@ class Disparo {
     return this.y < -20 || this.alpha <= 0;
   }
 }
+//////////////////////////
+// ASTEROIDE
+//////////////////////////
 
 class Asteroide {
   constructor() {
@@ -525,19 +609,34 @@ class Asteroide {
   }
 
   mostrar() {
+    if (imgAsteroide) {
+      push();
+      translate(this.x, this.y);
+      rotate(this.rot);
+      imageMode(CENTER);
+      image(imgAsteroide, 0, 0, this.tam, this.tam);
+      pop();
+      return;
+    }
+
+    // fallback dibujo
     push();
     translate(this.x, this.y);
     rotate(this.rot);
     fill(130);
     noStroke();
     ellipse(0, 0, this.tam, this.tam * 0.86);
-    // cráteres
+
     fill(100);
     ellipse(-this.tam * 0.15, -this.tam * 0.12, this.tam * 0.26);
     ellipse(this.tam * 0.2, this.tam * 0.05, this.tam * 0.22);
     pop();
   }
 }
+
+//////////////////////////
+// ESTRELLA
+//////////////////////////
 
 class Estrella {
   constructor() {
@@ -549,10 +648,12 @@ class Estrella {
   }
 
   mover() {
-    // si el mouse está sobre el centro del menú animamos estrellas más rápido para efecto
-    if (juego.estado === "menu" && dist(mouseX, mouseY, width / 2, height / 2) < 200) {
+    if (juego && juego.estado === "menu" && dist(mouseX, mouseY, width / 2, height / 2) < 200) {
       this.y += this.vel * 1.8;
-    } else this.y += this.vel;
+    } else {
+      this.y += this.vel;
+    }
+
     if (this.y > height) {
       this.y = -random(10, 40);
       this.x = random(width);
@@ -565,6 +666,10 @@ class Estrella {
     ellipse(this.x, this.y, this.tam);
   }
 }
+
+//////////////////////////
+// PARTICULA
+//////////////////////////
 
 class Particula {
   constructor(x, y) {
@@ -588,6 +693,10 @@ class Particula {
     ellipse(this.x, this.y, this.tam);
   }
 }
+
+//////////////////////////
+// CONFETTI
+//////////////////////////
 
 class Confetti {
   constructor(x, y) {
@@ -619,6 +728,10 @@ class Confetti {
   }
 }
 
+//////////////////////////
+// BOTON (RECONSTRUIDO)
+//////////////////////////
+
 class Boton {
   constructor(x, y, w, h, texto) {
     this.x = x;
@@ -626,74 +739,48 @@ class Boton {
     this.w = w;
     this.h = h;
     this.texto = texto;
-    this.hoverLerp = 0; // para suavizar hover
+    this.hover = false;
+  }
+
+  isHover(mx, my) {
+    return mx > this.x && mx < this.x + this.w &&
+      my > this.y && my < this.y + this.h;
   }
 
   mostrarHover() {
-    // detectar hover con mouse
-    let over = this.isHover(mouseX, mouseY);
-    // suavizado
-    this.hoverLerp = lerp(this.hoverLerp, over ? 1 : 0, 0.18);
+    this.hover = this.isHover(mouseX, mouseY);
 
     push();
-    translate(this.x, this.y);
-    // fondo
-    let base = lerpColor(color(60, 60, 100), color(90, 90, 150), this.hoverLerp);
-    fill(base);
+    rectMode(CORNER);
     noStroke();
-    rect(0, 0, this.w, this.h, 10);
 
-    // glow
-    if (this.hoverLerp > 0.02) {
-      let g = map(this.hoverLerp, 0, 1, 20, 80);
-      drawingContext.shadowBlur = g;
-      drawingContext.shadowColor = 'rgba(0,200,255,0.6)';
-    } else {
-      drawingContext.shadowBlur = 0;
+    // Fondo con efecto hover
+    fill(this.hover ? color(100, 100, 180) : color(60, 60, 100));
+    rect(this.x, this.y, this.w, this.h, 10);
+
+    // Borde suave si está en hover
+    if (this.hover) {
+      stroke(0, 200, 255);
+      noFill();
+      strokeWeight(2);
+      rect(this.x - 2, this.y - 2, this.w + 4, this.h + 4, 12);
     }
 
-    // texto
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(map(this.hoverLerp, 0, 1, 14, 16));
-    text(this.texto, this.w / 2, this.h / 2);
-
-    // reset shadow
-    drawingContext.shadowBlur = 0;
-    pop();
-  }
-
-  mostrar() {
-    // fallback no-hover
-    push();
-    fill(60, 60, 100);
+    // Texto
     noStroke();
-    rect(this.x, this.y, this.w, this.h, 10);
     fill(255);
     textAlign(CENTER, CENTER);
-    textSize(14);
+    textSize(this.hover ? 17 : 15);
     text(this.texto, this.x + this.w / 2, this.y + this.h / 2);
+
     pop();
   }
 
-  isHover(px, py) {
-    return px > this.x && px < this.x + this.w && py > this.y && py < this.y + this.h;
-  }
-
-  click(px, py) {
-    return this.isHover(px, py);
+  click(mx, my) {
+    return this.isHover(mx, my);
   }
 }
 
-// Corazón simple
-function heart(x, y, s) {
-  push();
-  translate(x, y);
-  scale(1);
-  beginShape();
-  vertex(0, 0);
-  bezierVertex(-s * 0.5, -s * 0.5, -s, s * 0.33, 0, s);
-  bezierVertex(s, s * 0.33, s * 0.5, -s * 0.5, 0, 0);
-  endShape(CLOSE);
-  pop();
-}
+//////////////////////////
+// FIN DEL ARCHIVO
+//////////////////////////
