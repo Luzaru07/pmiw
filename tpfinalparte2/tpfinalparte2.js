@@ -4,21 +4,21 @@
 //  Url: https://youtu.be/hvHYH2fSdfY
 // =========================================
 
-// ---- Recursos (imagenes y sonidos) ----
-let musicaFondo, sonidoDisparo, sonidoExplosion;
-let imgFondo, imgNave, imgAsteroide, imgHeart;
+// ---------- Recursos ----------
+let sndMusica, sndDisparo, sndExplosion;
+let imgFondo, imgNave, imgAsteroide, imgVida;
 let juego;
 
 function preload() {
-  musicaFondo = loadSound("./data/musica.mp3");
-  sonidoDisparo = loadSound("./data/disparo.wav");
-  sonidoExplosion = loadSound("./data/explosion.wav");
+  sndMusica = loadSound("./data/musica.mp3");
+  sndDisparo = loadSound("./data/disparo.wav");
+  sndExplosion = loadSound("./data/explosion.wav");
 
 
   imgFondo = loadImage("./data/fondo.jpg");
   imgNave = loadImage("./data/nave.png");
   imgAsteroide = loadImage("./data/asteroide.png");
-  imgHeart = loadImage("./data/heart.jpg");
+  imgVida = loadImage("./data/vida.jpg");
 }
 
 // -----------------------------------------
@@ -29,14 +29,12 @@ function setup() {
 
 // -----------------------------------------
 function draw() {
-    background(5, 5, 20);
-    
+    background(5, 5, 20); 
    if (imgFondo) {
     image(imgFondo, 0, 0, width, height);
   } else {
     background(5, 5, 20);
   }
-  
   textFont('monospace');
   juego.mostrar();
   juego.actualizar();

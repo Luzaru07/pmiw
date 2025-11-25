@@ -47,9 +47,9 @@ class Juego {
       this.nave.mover();
 
       // Iniciar música
-      if (musicaFondo && !musicaFondo.isPlaying()) {
-        musicaFondo.setVolume(0.4);
-        musicaFondo.loop();
+      if (sndMusica && !sndMusica.isPlaying()) {
+        sndMusica.setVolume(0.4);
+        sndMusica.loop();
       }
 
       // Estrellas
@@ -94,7 +94,7 @@ class Juego {
           if (dist(b.x, b.y, a.x, a.y) < a.tam / 2) {
             for (let k = 0; k < 10; k++) this.particulas.push(new Particula(a.x, a.y));
 
-            if (sonidoExplosion) sonidoExplosion.play();
+            if (sndExplosion) sndExplosion.play();
 
             this.balas.splice(j, 1);
             this.asteroides.splice(i, 1);
@@ -126,7 +126,7 @@ class Juego {
 
           if (this.nave.vida <= 0) {
             this.estado = "perder";
-            if (musicaFondo) musicaFondo.stop();
+            if (sndMusica) sndMusica.stop();
           }
 
           continue;
@@ -145,7 +145,7 @@ class Juego {
       if (this.puntaje >= 25) {
         this.estado = "ganar";
         for (let i = 0; i < 80; i++) this.confetti.push(new Confetti(random(width), random(-200, -20)));
-        if (musicaFondo) musicaFondo.stop();
+        if (sndMusica) sndMusica.stop();
       }
     }
 
@@ -205,9 +205,9 @@ class Juego {
       if (this.botonVolver.click(x, y)) {
         this.estado = "menu";
         this.confetti = [];
-        if (musicaFondo && !musicaFondo.isPlaying()) {
-          musicaFondo.setVolume(0.4);
-          musicaFondo.loop();
+        if (sndMusica && !sndMusica.isPlaying()) {
+          sndMusica.setVolume(0.4);
+          sndMusica.loop();
         }
       }
     }
@@ -223,7 +223,7 @@ class Juego {
 
       if (keyCode === 32) { // disparo con barra espaciadora
         this.balas.push(new Bala(this.nave.x, this.nave.y));
-        if (sonidoDisparo) sonidoDisparo.play();
+        if (sndDisparo) sndDisparo.play();
       }
     } else if (["ganar", "perder"].includes(this.estado) && keyCode === ENTER) {
       this.reiniciar();
@@ -246,9 +246,9 @@ class Juego {
     this.particulas = [];
     this.confetti = [];
 
-    if (musicaFondo && !musicaFondo.isPlaying()) {
-      musicaFondo.setVolume(0.4);
-      musicaFondo.loop();
+    if (sndMusica && !sndMusica.isPlaying()) {
+      sndMusica.setVolume(0.4);
+      sndMusica.loop();
     }
   }
 
@@ -324,7 +324,7 @@ class Juego {
       else if (i === vidasEnteras && this.nave.vida - vidasEnteras >= 0.5) fill(255, 140, 0);
       else fill(100);
 
-      image (imgHeart, 20 + i * 30, 55, 20, 20);
+      image (imgVida, 20 + i * 30, 55, 20, 20);
     }
 
     fill(255);
@@ -448,7 +448,7 @@ class Nave {
       this.disparos.push(new Disparo(this.x, this.y - 36));
       this.cooldown = 8;
 
-      if (sonidoDisparo) sonidoDisparo.play();
+      if (sndDisparo) sndDisparo.play();
     }
   }
 
