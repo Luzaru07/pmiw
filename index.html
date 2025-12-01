@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="px-md-4 py-sm-1 text-center" id="Bienvenidos">¡Bienvenido a nuestra aventura gráfica!</h1>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <!--<a class="navbar-brand" href="#">Navbar</a> -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#Bienvenidos">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#Juego">Aventura</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#Info">Info</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="row">
+            <h5>¡Bienvenidos! En esta página los invitamos a recorrer un espacio pensado para
+                descubrir, jugar y dejarse
+                llevar por la curiosidad.</h5>
+            <p>Los invitamos a acompañarnos en esta aventura gráfica, donde cada sección es una nueva parte del camino
+                y cada detalle suma a la historia que queremos contar. Ojalá disfruten el recorrido tanto como nosotros
+                disfrutamos crearlo.</p>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-sm-12 g-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-text">Temática: Mitología</h3>
+                        <p class="card-text">Es un tema que nos llamó la atención por la cantidad de historias,
+                            personajes y simbolismos que tiene. La historia se centra en Kratos, aunque es conocido
+                            principalmente por los videojuegos de God of War, el personaje está inspirado en elementos
+                            reales de la mitología griega y, en las entregas más recientes, también en la nórdica.</p>
+                        <img src="img/img1.jpg" class="card-img-top" alt="...">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12 g-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">¿Quién es Kratos?</h5>
+                        <p></p>
+                        <img src="img/img2.jpg" class="card-img-top" alt="...">
+                        <p></p>
+                        <p class="card-text">Es el protagonista principal de la serie de videojuegos God of War. Se le
+                            conoce como "El Fantasma de Esparta". Es un semidiós, hijo de Zeus y una mujer mortal
+                            llamada Calisto. Un guerrero espartano que asciende rápidamente en la milicia y se
+                            convierte en el capitán de un ejército.A lo largo de los juegos, lucha contra dioses,
+                            monstruos y titanes, se convierte en el nuevo Dios de la Guerra y luego viaja a las tierras
+                            nórdicas. Es un personaje complejo, que lucha con su pasado violento y su ira. A lo largo de
+                            la serie, Kratos se embarca en varias aventuras en un intento por evitar un desastre o
+                            cambiar su destino. se lo presenta como ajeno a todo lo demás y arrogante en la
+                            naturaleza. A menudo se involucra en actividades moralmente ambiguas y realiza actos de
+                            extrema violencia.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h3 class="card-title text-center">Podés probar el programa que hicimos acá mismo:</h3>
+            <p></p>
+            <iframe id="Juego" src="tpfinalparte1/index.html" frameborder="0" width="650" height="490"></iframe>
+            <h3 class="card-text text-center">O presionando este botón:</h3>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                El renacer de Kratos
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">El Renacer de Kratos</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <iframe id="Juego" src="tpfinalparte1/index.html" frameborder="0" width="650"
+                                height="490"></iframe>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <!--   <button type="button" class="btn btn-primary">Save changes</button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <h3 class="py-sm-1 text-center" id="Info">Información</h3>
+            <div class="col-md-4 col-sm-6 g-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Proceso de producción</h5>
+                        <p class="card-text">Diagrama de flujo: Armamos un mapa con los distintos caminos/recorridos que
+                            puede hacer el jugador.
+                            Recursos: Utilizamos distintas ias para la creacion de las imagenes de fondo y de la
+                            historia
+                            para plasmar la vision que teníamos. Se utilizó un soundtrack de The Elder Scrolls: Oblivion
+                            como sonido de fondo.</p>
+                        <p>P5.jS: Programamos la lógica interactiva, el manejo de estados, los
+                            botones y el sonido para activar/desactivar.
+                            Prueba: Verificamos que los botones funcionaran correctamente, que la historia tenga la
+                            cronología correcta y que el sonido funcione bien.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 g-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Luz Rodríguez Calderón</h5>
+                        <p class="card-text">Se encargó de crear la base del programa, el diagrama de flujo con todos
+                            los
+                            caminos y finales, el flujo de estados, crear una cronología que logre darle coherencia a la
+                            historia así como una estética visual que acompañe el relato.</p>
+                        <h5>Valentín San Román</h5>
+                        <p>
+                            Programó la lógica de los botones, se encargó del sonido así como verificar que funcionaran
+                            correctamente, preparó las imagenes y las agregó dentro del código, de modo que se pudieran
+                            utilizar en cualquier momento.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12 g-4">
+                <img src="img/img3.jpg" alt="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
